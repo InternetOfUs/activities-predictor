@@ -1,0 +1,16 @@
+.ruff_cache
+*.egg-info
+.coverage
+.ipynb
+.ipynb_checkpoints
+.DS_Store
+**/__pycache__/
+.env
+.vscode/
+*.pyc
+*.log
+dist/
+*.db
+node_modules/
+static/
+*.deb
