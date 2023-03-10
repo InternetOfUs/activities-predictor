@@ -10,6 +10,7 @@ license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: Apache Software License"]
 dynamic = ["version", "description"]
 dependencies = [
+    "python-dotenv == 1.0.0",
 ]
 [project.urls]
 Home = "https://gitlab.idiap.ch/wenet/activities-predictor"
