@@ -12,7 +12,7 @@ load_dotenv()
 
 def main(nbmax=None, do_loop=False, delta_hours=12):
     while True:
-        process()
+        process(nbmax=nbmax)
         if not do_loop:
             break
         sleep(60 * 60 * delta_hours)
