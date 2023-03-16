@@ -3,10 +3,16 @@
 import argparse
 from time import sleep
 
+from dotenv import load_dotenv
+
+from activity_predictor.usecases import process
+
+load_dotenv()
+
 
 def main(nbmax=None, do_loop=False, delta_hours=12):
     while True:
-        ...
+        process()
         if not do_loop:
             break
         sleep(60 * 60 * delta_hours)
