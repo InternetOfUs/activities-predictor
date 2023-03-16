@@ -127,6 +127,46 @@ def _get_user_data(userid, property="locationeventpertime", env="dev"):
         return None
 
 
+def _update_profile(userid, activity, env="dev", confidence=0.8):
+    if userid is None or userid == "":
+        print("warning, empty userid")
+        return
+    try:
+        secret = environ.get(_env_type[env])
+        if secret is None:
+            raise SecretNotFound(f"{_env_type[env]} not found in .env")
+
+        if env == "prod":
+            url = f"https://internetofus.u-hopper.com/{env}/profile_manager/profiles/{userid}"
+        else:
+            url = f"https://wenet.u-hopper.com/{env}/profile_manager/profiles/{userid}"
+        headers = {
+            "x-wenet-component-apikey": secret,
+            "Accept": "application/json",
+        }
+
+        try:
+            ts = int(datetime.datetime.now().timestamp())
+            res = requests.patch(
+                url,
+                headers=headers,
+                json={
+                    "latestKnownActivity": {
+                        "timestamp": ts,
+                        "activity": activity,
+                        "confidence": confidence,
+                    }
+                },
+            )
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise RequestError(f"An error occurred while making the request: {e}")
+
+    except (SecretNotFound, RequestError) as e:
+        print(e)
+        return None
+
+
 def process(nbmax=None, env="dev"):
     """
     Process and print user data for a specified number of users.
@@ -150,5 +190,8 @@ def process(nbmax=None, env="dev"):
         users = users[-nbmax:]
     pprint(users)
     for user in users:
-        data = _get_user_data(user, env=env)
-        pprint(data)
+        _ = _get_user_data(user, env=env)
+        #  TODO predict activity
+        activity = "Sleeping"
+        if activity != "Nothing":
+            _update_profile(user, activity, env=env)
