@@ -1,10 +1,15 @@
 """main of the package"""
 
 import argparse
+from time import sleep
 
 
 def main(nbmax=None, do_loop=False, delta_hours=12):
-    pass
+    while True:
+        ...
+        if not do_loop:
+            break
+        sleep(60 * 60 * delta_hours)
 
 
 if __name__ == "__main__":
