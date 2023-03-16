@@ -10,9 +10,9 @@ from activity_predictor.usecases import process
 load_dotenv()
 
 
-def main(nbmax=None, do_loop=False, delta_hours=12):
+def main(nbmax=None, do_loop=False, delta_hours=12, env="dev"):
     while True:
-        process(nbmax=nbmax)
+        process(nbmax=nbmax, env=env)
         if not do_loop:
             break
         sleep(60 * 60 * delta_hours)
@@ -30,5 +30,14 @@ if __name__ == "__main__":
         type=int,
         default=12,
     )
+    parser.add_argument(
+        "--env", help="env to use", choices=["dev", "beta", "prod"], default="dev"
+    )
+
     args = parser.parse_args()
-    main(nbmax=args.nbmax, do_loop=args.do_loop, delta_hours=args.delta_hours)
+    main(
+        nbmax=args.nbmax,
+        do_loop=args.do_loop,
+        delta_hours=args.delta_hours,
+        env=args.env,
+    )
