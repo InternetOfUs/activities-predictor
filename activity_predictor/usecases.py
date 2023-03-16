@@ -122,6 +122,8 @@ def _get_user_data(userid, property="locationeventpertime"):
 
 def process(nbmax=None):
     users = _get_users()
+    if users is None:
+        return None
     if nbmax is not None:
         users = users[-nbmax:]
     pprint(users)
