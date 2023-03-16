@@ -121,6 +121,21 @@ def _get_user_data(userid, property="locationeventpertime"):
 
 
 def process(nbmax=None):
+    """
+    Process and print user data for a specified number of users.
+
+    This function retrieves a list of users using the _get_users() function, and then fetches
+    user data for each user using the _get_user_data() function. The retrieved user data is
+    printed using the pprint function.
+
+    Args:
+        nbmax (int, optional): The maximum number of users to process. If not provided, all users
+                               will be processed. If provided, only the last 'nbmax' users will be
+                               processed.
+
+    Returns:
+        None: This function returns None if an error occurs, or if it completes successfully.
+    """
     users = _get_users()
     if users is None:
         return None
