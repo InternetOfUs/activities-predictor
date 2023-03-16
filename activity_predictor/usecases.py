@@ -7,6 +7,8 @@ from pprint import pprint
 
 import requests
 
+_env_type = {"prod": "PRODSECRET", "beta": "BETASECRET", "dev": "DEVSECRET"}
+
 
 class SecretNotFound(Exception):
     pass
@@ -20,7 +22,7 @@ class ResponseParsingError(Exception):
     pass
 
 
-def _get_users():
+def _get_users(env="dev"):
     """
     Retrieve a list of user identifiers from the profile manager.
 
@@ -36,13 +38,16 @@ def _get_users():
         list: A list of user IDs if successful, or None if an error occurs.
     """
     try:
-        prod_secret = environ.get("PRODSECRET")
-        if prod_secret is None:
-            raise SecretNotFound("PRODSECRET not found in .env")
+        secret = environ.get(_env_type[env])
+        if secret is None:
+            raise SecretNotFound(f"{_env_type[env]} not found in .env")
 
-        url = "https://internetofus.u-hopper.com/prod/profile_manager/userIdentifiers?offset=0&limit=10000"
+        if env == "prod":
+            url = f"https://internetofus.u-hopper.com/{env}/profile_manager/userIdentifiers?offset=0&limit=10000"
+        else:
+            url = f"https://wenet.u-hopper.com/{env}/profile_manager/userIdentifiers?offset=0&limit=10000"
         headers = {
-            "x-wenet-component-apikey": prod_secret,
+            "x-wenet-component-apikey": secret,
             "Accept": "application/json",
         }
 
@@ -66,7 +71,7 @@ def _get_users():
         return None
 
 
-def _get_user_data(userid, property="locationeventpertime"):
+def _get_user_data(userid, property="locationeventpertime", env="dev"):
     """
     Retrieve user data for a specific user and property.
 
@@ -86,18 +91,20 @@ def _get_user_data(userid, property="locationeventpertime"):
         dict: A dictionary containing the user data if successful, or None if an error occurs.
     """
     try:
-        prod_secret = environ.get("PRODSECRET")
-        if prod_secret is None:
-            raise SecretNotFound("PRODSECRET not found in .env")
+        secret = environ.get(_env_type[env])
+        if secret is None:
+            raise SecretNotFound(f"{_env_type[env]} not found in .env")
 
         today = datetime.datetime.now()
         yesterday = today - datetime.timedelta(hours=2)
         today = today.strftime("%Y%m%d%H%M%S") + "000"
         yesterday = yesterday.strftime("%Y%m%d%H%M%S") + "000"
-
-        url = f"https://internetofus.u-hopper.com/prod/streambase/data?from={yesterday}&to={today}&properties={property}&userId={userid}"
+        if env == "prod":
+            url = f"https://internetofus.u-hopper.com/{env}/streambase/data?from={yesterday}&to={today}&properties={property}&userId={userid}"
+        else:
+            url = f"https://wenet.u-hopper.com/{env}/streambase/data?from={yesterday}&to={today}&properties={property}&userId={userid}"
         headers = {
-            "x-wenet-component-apikey": prod_secret,
+            "x-wenet-component-apikey": secret,
             "Accept": "application/json",
         }
 
@@ -120,7 +127,7 @@ def _get_user_data(userid, property="locationeventpertime"):
         return None
 
 
-def process(nbmax=None):
+def process(nbmax=None, env="dev"):
     """
     Process and print user data for a specified number of users.
 
@@ -136,12 +143,12 @@ def process(nbmax=None):
     Returns:
         None: This function returns None if an error occurs, or if it completes successfully.
     """
-    users = _get_users()
+    users = _get_users(env=env)
     if users is None:
         return None
     if nbmax is not None:
         users = users[-nbmax:]
     pprint(users)
     for user in users:
-        data = _get_user_data(user)
+        data = _get_user_data(user, env=env)
         pprint(data)
