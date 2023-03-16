@@ -8,7 +8,7 @@ from pprint import pprint
 import requests
 
 
-class ProdSecretNotFound(Exception):
+class SecretNotFound(Exception):
     pass
 
 
@@ -28,7 +28,7 @@ def _get_users():
     It then parses the JSON response and extracts the user IDs.
 
     Raises:
-        ProdSecretNotFound: If the PRODSECRET environment variable is not found in the .env file.
+        SecretNotFound: If the PRODSECRET environment variable is not found in the .env file.
         RequestError: If there is an error while making the request to the URL.
         ResponseParsingError: If there is an error while parsing the response.
 
@@ -38,7 +38,7 @@ def _get_users():
     try:
         prod_secret = environ.get("PRODSECRET")
         if prod_secret is None:
-            raise ProdSecretNotFound("PRODSECRET not found in .env")
+            raise SecretNotFound("PRODSECRET not found in .env")
 
         url = "https://internetofus.u-hopper.com/prod/profile_manager/userIdentifiers?offset=0&limit=10000"
         headers = {
@@ -61,7 +61,7 @@ def _get_users():
                 f"An error occurred while parsing the response: {e}"
             )
 
-    except (ProdSecretNotFound, RequestError, ResponseParsingError) as e:
+    except (SecretNotFound, RequestError, ResponseParsingError) as e:
         print(e)
         return None
 
@@ -78,7 +78,7 @@ def _get_user_data(userid, property="locationeventpertime"):
         property (str, optional): The property to retrieve data for. Defaults to "locationeventpertime".
 
     Raises:
-        ProdSecretNotFound: If the PRODSECRET environment variable is not found in the .env file.
+        SecretNotFound: If the PRODSECRET environment variable is not found in the .env file.
         RequestError: If there is an error while making the request to the URL.
         ResponseParsingError: If there is an error while parsing the response.
 
@@ -88,7 +88,7 @@ def _get_user_data(userid, property="locationeventpertime"):
     try:
         prod_secret = environ.get("PRODSECRET")
         if prod_secret is None:
-            raise ProdSecretNotFound("PRODSECRET not found in .env")
+            raise SecretNotFound("PRODSECRET not found in .env")
 
         today = datetime.datetime.now()
         yesterday = today - datetime.timedelta(hours=2)
@@ -115,7 +115,7 @@ def _get_user_data(userid, property="locationeventpertime"):
                 f"An error occurred while parsing the response: {e}"
             )
 
-    except (ProdSecretNotFound, RequestError, ResponseParsingError) as e:
+    except (SecretNotFound, RequestError, ResponseParsingError) as e:
         print(e)
         return None
 
