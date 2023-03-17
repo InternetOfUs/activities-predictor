@@ -30,7 +30,12 @@ def predict_activity(
 ):
     from wenet.activity_detection import ActivityDetection
 
-    current_timestamp = datetime.datetime.now() - datetime.timedelta(minutes=20)
+    try:
+        dt = data[-1]["data"]["locationeventpertime"][-1]["ts"]
+        current_timestamp = datetime.datetime.fromtimestamp(dt / 1000)
+    except Exception as e:
+        print(e)
+        return None
     try:
         data_file = Path(f"{uuid4()}.json")
         with open(data_file, "w") as f:
@@ -42,7 +47,7 @@ def predict_activity(
         ad = ActivityDetection(embed_model, models_path / "random-forest")
 
         pred = ad.predict_from_json(data_file, current_timestamp, country)
-        return pred
+        return pred[0]
     finally:
         data_file.unlink()
 
@@ -217,5 +222,6 @@ def process(nbmax=None, env="dev", models_path=Path("/models")):
     for user in users:
         data = _get_user_data(user, env=env)
         activity = predict_activity(data=data, models_path=models_path)
-        if activity != "Nothing":
+        print(f"predicted {activity} for user {user}")
+        if activity is not None and activity != "Nothing":
             _update_profile(user, activity, env=env)
