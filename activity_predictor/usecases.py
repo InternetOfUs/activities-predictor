@@ -26,7 +26,7 @@ class ResponseParsingError(Exception):
 
 
 def predict_activity(
-    data, models_path: Path = Path("/models"), sensor_type=4, country="all"
+    data, models_path: Path = Path("/models"), sensor_type=6, country="all"
 ):
     from wenet.activity_detection import ActivityDetection
 
