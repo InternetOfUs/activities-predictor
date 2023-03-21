@@ -16,8 +16,8 @@ build_image:
     - linux
   stage: build_image
   script:
-    - docker build . -t docker.idiap.ch/wenet/activities_prodictor:latest
-    - docker build -f Dockerfile_slim . -t docker.idiap.ch/wenet/activities_prodictor:latest-slim
+    - docker build . -t docker.idiap.ch/wenet/activities_predictor:latest
+    - docker build -f Dockerfile_slim . -t docker.idiap.ch/wenet/activities_predictor:latest-slim
 
 push:
   tags:
@@ -28,11 +28,11 @@ push:
     - master
   script:
     - echo $CI_JOB_TOKEN | docker login docker.idiap.ch -u gitlab-ci-token --password-stdin
-    - docker push docker.idiap.ch/wenet/activities_prodictor:latest
-    - docker push docker.idiap.ch/wenet/activities_prodictor:latest-slim
+    - docker push docker.idiap.ch/wenet/activities_predictor:latest
+    - docker push docker.idiap.ch/wenet/activities_predictor:latest-slim
     - echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
-    - docker tag docker.idiap.ch/wenet/activities_prodictor:latest internetofus/activities_prodictor:latest
-    - docker push internetofus/activities_prodictor:latest
+    - docker tag docker.idiap.ch/wenet/activities_predictor:latest internetofus/activities_predictor:latest
+    - docker push internetofus/activities_predictor:latest
 push_version:
   tags:
     - docker
@@ -42,13 +42,13 @@ push_version:
     - tags
   script:
     - echo $CI_JOB_TOKEN | docker login docker.idiap.ch -u gitlab-ci-token --password-stdin
-    - docker tag  docker.idiap.ch/wenet/activities_prodictor:latest docker.idiap.ch/wenet/activities_prodictor:$CI_COMMIT_TAG
-    - docker push docker.idiap.ch/wenet/activities_prodictor:$CI_COMMIT_TAG
-    - docker tag  docker.idiap.ch/wenet/activities_prodictor:latest-slim docker.idiap.ch/wenet/activities_prodictor:$CI_COMMIT_TAG-slim
-    - docker push docker.idiap.ch/wenet/activities_prodictor:$CI_COMMIT_TAG-slim
+    - docker tag  docker.idiap.ch/wenet/activities_predictor:latest docker.idiap.ch/wenet/activities_predictor:$CI_COMMIT_TAG
+    - docker push docker.idiap.ch/wenet/activities_predictor:$CI_COMMIT_TAG
+    - docker tag  docker.idiap.ch/wenet/activities_predictor:latest-slim docker.idiap.ch/wenet/activities_predictor:$CI_COMMIT_TAG-slim
+    - docker push docker.idiap.ch/wenet/activities_predictor:$CI_COMMIT_TAG-slim
     - echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
-    - docker tag docker.idiap.ch/wenet/activities_prodictor:$CI_COMMIT_TAG internetofus/activities_prodictor:$CI_COMMIT_TAG
-    - docker push internetofus/activities_prodictor:$CI_COMMIT_TAG
+    - docker tag docker.idiap.ch/wenet/activities_predictor:$CI_COMMIT_TAG internetofus/activities_predictor:$CI_COMMIT_TAG
+    - docker push internetofus/activities_predictor:$CI_COMMIT_TAG
 update_k8s:
   tags:
     - docker
