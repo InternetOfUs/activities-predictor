@@ -2,8 +2,11 @@
 
 
 import datetime
+import json
 from os import environ
+from pathlib import Path
 from pprint import pprint
+from uuid import uuid4
 
 import requests
 
@@ -20,6 +23,33 @@ class RequestError(Exception):
 
 class ResponseParsingError(Exception):
     pass
+
+
+def predict_activity(
+    data, models_path: Path = Path("/models"), sensor_type=6, country="all"
+):
+    from wenet.activity_detection import ActivityDetection
+
+    try:
+        dt = data[-1]["data"]["locationeventpertime"][-1]["ts"]
+        current_timestamp = datetime.datetime.fromtimestamp(dt / 1000)
+    except Exception as e:
+        print(e)
+        return None
+    try:
+        data_file = Path(f"{uuid4()}.json")
+        with open(data_file, "w") as f:
+            json.dump(data, f)
+        embed_model = (
+            models_path
+            / f"auto-encoder-cat-datetime/wenet-all-countries-ae-method2-embed22-feats{sensor_type}-m-0/model_0.pkl"
+        )
+        ad = ActivityDetection(embed_model, models_path / "random-forest")
+
+        pred = ad.predict_from_json(data_file, current_timestamp, country)
+        return pred[0]
+    finally:
+        data_file.unlink()
 
 
 def _get_users(env="dev"):
@@ -167,7 +197,7 @@ def _update_profile(userid, activity, env="dev", confidence=0.8):
         return None
 
 
-def process(nbmax=None, env="dev"):
+def process(nbmax=None, env="dev", models_path=Path("/models")):
     """
     Process and print user data for a specified number of users.
 
@@ -190,8 +220,8 @@ def process(nbmax=None, env="dev"):
         users = users[-nbmax:]
     pprint(users)
     for user in users:
-        _ = _get_user_data(user, env=env)
-        #  TODO predict activity
-        activity = "Sleeping"
-        if activity != "Nothing":
+        data = _get_user_data(user, env=env)
+        activity = predict_activity(data=data, models_path=models_path)
+        print(f"predicted {activity} for user {user}")
+        if activity is not None and activity != "Nothing":
             _update_profile(user, activity, env=env)

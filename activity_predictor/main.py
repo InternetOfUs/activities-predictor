@@ -1,6 +1,7 @@
 """main of the package"""
 
 import argparse
+from pathlib import Path
 from time import sleep
 
 from dotenv import load_dotenv
@@ -10,9 +11,11 @@ from activity_predictor.usecases import process
 load_dotenv()
 
 
-def main(nbmax=None, do_loop=False, delta_hours=12, env="dev"):
+def main(
+    nbmax=None, do_loop=False, delta_hours=12, env="dev", models_path=Path("/models")
+):
     while True:
-        process(nbmax=nbmax, env=env)
+        process(nbmax=nbmax, env=env, models_path=models_path)
         if not do_loop:
             break
         sleep(60 * 60 * delta_hours)
@@ -21,6 +24,9 @@ def main(nbmax=None, do_loop=False, delta_hours=12, env="dev"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Wenet activities predictor CLI")
     parser.add_argument("--nbmax", help="number max of users", type=int, default=None)
+    parser.add_argument(
+        "--models_path", help="path of the models", type=Path, default=Path("/models")
+    )
     parser.add_argument(
         "--do_loop", help="if enabled, this will loop forever", action="store_true"
     )
@@ -40,4 +46,5 @@ if __name__ == "__main__":
         do_loop=args.do_loop,
         delta_hours=args.delta_hours,
         env=args.env,
+        models_path=Path(args.models_path),
     )
