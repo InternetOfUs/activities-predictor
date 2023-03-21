@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wenet-activities-predictor-deployment
+  labels:
+    app: wenet-activities-predictor
+spec:
+  selector:
+    matchLabels:
+      app: wenet-activities-predictor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wenet-activities-predictor
+    spec:
+      containers:
+        - name: wenet-activities-predictor
+          image: docker.idiap.ch/wenet/activities-predictor:latest-slim
+          envFrom:
+            - configMapRef:
+                name: settings-wenet-activities-predictor-env
+          volumeMounts:
+            - name: tz-zurich
+              mountPath: /etc/localtime
+            - name: wenet-models
+              mountPath: /models
+          resources:
+            limits:
+              memory: 9Gi
+              #cpu: "2"
+            requests:
+              memory: 9Gi
+              #cpu: "2"
+      imagePullSecrets:
+        - name: wenet-realtime-secret
+      volumes:
+        - name: tz-zurich
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Zurich
+        - name: wenet-models
+          persistentVolumeClaim:
+            claimName: wenet-models
+
+
+---
+apiVersion: v1
+data:
+  DEVSECRET: REDACTED
+kind: ConfigMap
+metadata:
+  name: settings-wenet-activities-predictor-env
