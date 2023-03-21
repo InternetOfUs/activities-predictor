@@ -12,6 +12,7 @@ dynamic = ["version", "description"]
 dependencies = [
     "python-dotenv == 1.0.0",
     "requests == 2.28.2",
+    "wenet@git+https://bot:T11beRJhaW2RF7UazR_F@gitlab.idiap.ch/wenet/wenet-api.git@integration",
 ]
 [project.urls]
 Home = "https://gitlab.idiap.ch/wenet/activities-predictor"
