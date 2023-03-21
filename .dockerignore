@@ -1,0 +1,14 @@
+.git
+__pycache__/
+.vscode/
+.coverage
+.ipynb_checkpoints/
+htmlcov/
+*.p
+*.log
+*egg*
+*.pkl
+*.job
+*.joblib
+*key*
+.env
