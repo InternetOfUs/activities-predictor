@@ -17,7 +17,7 @@ build_image:
   stage: build_image
   script:
     - docker build . -t docker.idiap.ch/wenet/activities_prodictor:latest
-    - docker build -f Dockerfile_slim -t docker.idiap.ch/wenet/activities_prodictor:latest-slim
+    - docker build -f Dockerfile_slim . -t docker.idiap.ch/wenet/activities_prodictor:latest-slim
 
 push:
   tags:
