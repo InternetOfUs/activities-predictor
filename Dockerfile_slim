@@ -1,0 +1,23 @@
+FROM continuumio/miniconda3:22.11.1
+
+ENV TZ=Europe/Zurich
+
+WORKDIR /app
+
+RUN apt-get -y update && apt-get install -y \
+    git \
+    python3-pip \
+    zip \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
+
+
+# Assume /models exist
+
+COPY . .
+
+RUN pip install .
+
+CMD ["python3", "-m", "activity_predictor.main", "--env", "dev", "--models_path", "/models"]
