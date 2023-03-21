@@ -14,3 +14,4 @@ dist/
 node_modules/
 static/
 *.deb
+deployement.yaml
