@@ -22,4 +22,4 @@ COPY . .
 
 RUN pip install .
 
-CMD ["python3", "-m", "activity_predictor.main", "--env", "dev", "--models_path", "/models"]
+CMD ["python3", "-m", "activity_predictor.main", "--env", "dev", "--models_path", "/models", "--do_loop"]
