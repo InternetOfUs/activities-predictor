@@ -2,7 +2,7 @@ version: "3"
 services:
   wenet-activities-predictor:
     container_name: wenet-activities-predictor
-    image: "internetofus/activities-predictor:latest"
+    image: "internetofus/activities-predictor:v0.0.1"
     env_file:
       - .env
     entrypoint:
