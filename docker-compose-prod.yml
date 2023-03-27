@@ -9,6 +9,7 @@ services:
       [
         "python3",
         "-m",
+        "-u",
         "activity_predictor.main",
         "--env",
         #  replace dev by beta or prod
