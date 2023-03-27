@@ -1,0 +1,19 @@
+version: "3"
+services:
+  wenet-activities-predictor:
+    container_name: wenet-activities-predictor
+    image: "internetofus/activities-predictor:latest"
+    env_file:
+      - .env
+    entrypoint:
+      [
+        "python3",
+        "-m",
+        "activity_predictor.main",
+        "--env",
+        #  replace dev by beta or prod
+        "beta",
+        "--models_path",
+        "/models",
+        "--do_loop"
+      ]
