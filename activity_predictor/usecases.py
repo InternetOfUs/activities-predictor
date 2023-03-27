@@ -222,7 +222,10 @@ def process(nbmax=None, env="dev", models_path=Path("/models")):
     pprint(users)
     for user in users:
         data = _get_user_data(user, env=env)
-        activity = predict_activity(data=data, models_path=models_path)
-        print(f"predicted {activity} for user {user}")
-        if activity is not None and activity != "Nothing":
-            _update_profile(user, activity, env=env)
+        if data is not None:
+            activity = predict_activity(data=data, models_path=models_path)
+            print(f"predicted {activity} for user {user}")
+            if activity is not None and activity != "Nothing":
+                _update_profile(user, activity, env=env)
+        else:
+            print(f"no recent data for {user}")
