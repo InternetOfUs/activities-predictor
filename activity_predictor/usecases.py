@@ -213,6 +213,7 @@ def process(nbmax=None, env="dev", models_path=Path("/models")):
     Returns:
         None: This function returns None if an error occurs, or if it completes successfully.
     """
+    print("Start to ask for users...")
     users = _get_users(env=env)
     if users is None:
         return None
