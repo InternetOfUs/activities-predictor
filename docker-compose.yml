@@ -8,8 +8,8 @@ services:
     entrypoint:
       [
         "python3",
-        "-m",
         "-u",
+        "-m",
         "activity_predictor.main",
         "--env",
         #  replace dev by beta or prod
