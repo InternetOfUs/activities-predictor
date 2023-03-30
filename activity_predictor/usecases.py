@@ -5,10 +5,14 @@ import datetime
 import json
 from os import environ
 from pathlib import Path
-from pprint import pprint
 from uuid import uuid4
 
 import requests
+
+from activity_predictor.logger import create_logger
+
+_LOGGER = create_logger(__name__)
+
 
 _env_type = {"prod": "PRODSECRET", "beta": "BETASECRET", "dev": "DEVSECRET"}
 
@@ -34,7 +38,8 @@ def predict_activity(
         dt = data[-1]["data"]["locationeventpertime"][-1]["ts"]
         current_timestamp = datetime.datetime.fromtimestamp(dt / 1000)
     except Exception as e:
-        print(e)
+        _LOGGER.warn("unable to get timestamp of the datapoint")
+        _LOGGER.exception(e)
         return None
     try:
         data_file = Path(f"{uuid4()}.json")
@@ -97,7 +102,7 @@ def _get_users(env="dev"):
             )
 
     except (SecretNotFound, RequestError, ResponseParsingError) as e:
-        print(e)
+        _LOGGER.exception(e)
         return None
 
 
@@ -153,7 +158,7 @@ def _get_user_data(userid, property="locationeventpertime", env="dev"):
             )
 
     except (SecretNotFound, RequestError, ResponseParsingError) as e:
-        print(e)
+        _LOGGER.exception(e)
         return None
 
 
@@ -193,7 +198,7 @@ def _update_profile(userid, activity, env="dev", confidence=0.8):
             raise RequestError(f"An error occurred while making the request: {e}")
 
     except (SecretNotFound, RequestError) as e:
-        print(e)
+        _LOGGER.exception(e)
         return None
 
 
@@ -213,19 +218,19 @@ def process(nbmax=None, env="dev", models_path=Path("/models")):
     Returns:
         None: This function returns None if an error occurs, or if it completes successfully.
     """
-    print("Start to ask for users...")
+    _LOGGER.info("Start to ask for users...")
     users = _get_users(env=env)
     if users is None:
         return None
     if nbmax is not None:
         users = users[-nbmax:]
-    pprint(users)
+    _LOGGER.debug(users)
     for user in users:
         data = _get_user_data(user, env=env)
         if data is not None:
             activity = predict_activity(data=data, models_path=models_path)
-            print(f"predicted {activity} for user {user}")
+            _LOGGER.info(f"predicted {activity} for user {user}")
             if activity is not None and activity != "Nothing":
                 _update_profile(user, activity, env=env)
         else:
-            print(f"no recent data for {user}")
+            _LOGGER.info(f"no recent data for {user}")
