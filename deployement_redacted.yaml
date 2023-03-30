@@ -17,6 +17,7 @@ spec:
       containers:
         - name: wenet-activities-predictor
           image: docker.idiap.ch/wenet/activities-predictor:latest-slim
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: settings-wenet-activities-predictor-env
